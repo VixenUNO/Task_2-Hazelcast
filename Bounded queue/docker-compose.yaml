@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  hazelcast-node1:
+    build: .
+    ports:
+      - "5701:5701"
+    environment:
+      - HZ_CLUSTERNAME=dev
+      - HZ_NETWORK_RESTAPI_ENABLED=true
+      - HZ_NETWORK_RESTAPI_ENDPOINTGROUPS_DATA_ENABLED=true
+    networks:
+      - hazelnet
+
+  management-center:
+    image: hazelcast/management-center:5.3
+    ports:
+      - "8080:8080"
+    environment:
+      - MC_DEFAULT_CLUSTER=dev
+      - MC_DEFAULT_CLUSTER_MEMBERS=hazelcast-node1
+    depends_on:
+      - hazelcast-node1
+    networks:
+      - hazelnet
+
+networks:
+  hazelnet:

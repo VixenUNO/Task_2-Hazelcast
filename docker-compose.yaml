@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  hazelcast-node1:
+    image: hazelcast/hazelcast:5.3
+    hostname: hz1
+    ports:
+      - "5701:5701"
+    environment:
+      - HZ_CLUSTERNAME=dev
+      - HZ_NETWORK_RESTAPI_ENABLED=true
+      - HZ_NETWORK_RESTAPI_ENDPOINTGROUPS_DATA_ENABLED=true
+    networks:
+      - hazelnet
+
+  hazelcast-node2:
+    image: hazelcast/hazelcast:5.3
+    hostname: hz2
+    environment:
+      - HZ_CLUSTERNAME=dev
+      - HZ_NETWORK_RESTAPI_ENABLED=true
+      - HZ_NETWORK_RESTAPI_ENDPOINTGROUPS_DATA_ENABLED=true
+    networks:
+      - hazelnet
+
+  hazelcast-node3:
+    image: hazelcast/hazelcast:5.3
+    hostname: hz3
+    environment:
+      - HZ_CLUSTERNAME=dev
+      - HZ_NETWORK_RESTAPI_ENABLED=true
+      - HZ_NETWORK_RESTAPI_ENDPOINTGROUPS_DATA_ENABLED=true
+    networks:
+      - hazelnet
+
+  management-center:
+    image: hazelcast/management-center:5.3
+    ports:
+      - "8080:8080"
+    environment:
+      - MC_DEFAULT_CLUSTER=dev
+      - MC_DEFAULT_CLUSTER_MEMBERS=hz1,hz2,hz3
+    depends_on:
+      - hazelcast-node1
+      - hazelcast-node2
+      - hazelcast-node3
+    networks:
+      - hazelnet
+
+networks:
+  hazelnet:
